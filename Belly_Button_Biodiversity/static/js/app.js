@@ -76,20 +76,16 @@ function buildCharts(blah) {
     d3.json('samples.json').then(data => {
         // 'samples' w/in samples.json contains the data we want to make the graphs, so place that into a variable called 'samples'
         var samples = data.samples;
-        console.log("samples:", samples);
-        
+        console.log("samples:", samples);      
         // Within 'samples' from samples.json, find the id that matches the user input in drop down menu
         // ANSWER THIS: how does it know what the id is?  The parameter?  Where does the parameter factor in?
         var resultArray = samples.filter(sampleObj => sampleObj.id == blah);
-        console.log("buildCharts resultArray:", resultArray);
-        
+         console.log("resultArray:", resultArray);       
         // Pull that specific samples object out and place into a variable called 'result'
         var result = resultArray[0];
         console.log("result:", result);
         
-        
-        //error somewhere here!!!
-
+        // Variables to hold the various data for our charts
         var otu_ids = result.otu_ids;
         //console.log("otu_ids", otu_ids);
         var otu_labels = result.otu_labels;
@@ -97,28 +93,64 @@ function buildCharts(blah) {
         var sample_values = result.sample_values;
         //console.log("sample_values:", sample_values);
 
-        // var bubbleLayout = {
-        //     title: 'Vactera Cultures Per Sample',
-        //     margin: {t: 0 },
-        //     hovermode: 'closest',
-        //     xaxis: { title: 'OTU ID'},
-        //     margin: { t: 30}
-        // };
-        // var bubbleData = [
-        //     {
-        //         x: otu_ids,
-        //         y: sample_values,
-        //         text: otu_labels,
-        //         mode: 'markers',
-        //         marker: {
-        //             size: sample_values,
-        //             color: otu_ids,
-        //             colorscale: 'Earth'
-        //         }
-        //     }
-        // ];
+        // SLICING
+        var otu_ids_sliced = otu_ids.slice(0, 10);
+        console.log("SLICED IDS:", otu_ids_sliced);
+        var otu_labels_sliced = otu_labels.slice(0, 10);
+        console.log("Sliced Labels:", otu_labels_sliced);
+        var sample_values_sliced = sample_values.slice(0, 10);
+        console.log("Values Sliced:", sample_values_sliced);
 
-        // Plotly.newPlot('bubble',bubbleData,bubbleLayout);
+        // BAR CHART
+        var barData = [
+            {
+                x: sample_values_sliced,
+                y: otu_labels_sliced,
+                text: otu_labels_sliced,
+                name: "NAME?",
+                type: "bar",
+                orientation: "h"
+            }
+        ];
+
+        var barLayout = {
+            title: "BAR TITLE",
+            margin: {
+                l: 100,
+                r: 100,
+                t: 100,
+                b: 100
+            }
+        };
+
+        Plotly.newPlot("bar", barData, barLayout);
+
+        // BUBBLE CHART
+        var bubbleLayout = {
+            title: 'Bacteria Cultures Per Sample',
+            margin: {t: 0 },
+            hovermode: 'closest',
+            xaxis: { title: 'OTU ID'},
+            margin: { t: 30}
+        };
+        var bubbleData = [
+            {
+                x: otu_ids,
+                y: sample_values,
+                text: otu_labels,
+                mode: 'markers',
+                marker: {
+                    size: sample_values,
+                    color: otu_ids,
+                    colorscale: 'Earth'
+                }
+            }
+        ];
+
+        // BAR CHART
+        
+
+        Plotly.newPlot('bubble',bubbleData,bubbleLayout);
     });
 }
 
