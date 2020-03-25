@@ -10,7 +10,7 @@ function init() {
     d3.json('samples.json').then(data => {
         // Create variable to hold all the names
         var sampleNames = data.names;
-        // console.log(data);
+        //console.log(data);
 
         // Modify the selector for each name
         sampleNames.forEach(sample => {
@@ -31,12 +31,13 @@ function init() {
     });
 };
 
-// function optionChanged(newSample) {
-//     buildCharts(newSample);
-//     buildMetadata(newSample);
-// }
+function optionChanged(newSample) {
+    buildCharts(newSample);
+    buildMetadata(newSample);
+}
 
 // Create function to populate 'Demographic Info' table
+// Can build this function before creating optionChanged function
 function buildMetadata(sample) {
     // Fetch the JSON data
     d3.json('samples.json').then(data => {
@@ -45,8 +46,8 @@ function buildMetadata(sample) {
         
         // DON'T UNDERSTAND WHAT'S HAPPENING IN RESULTARRAY
         var resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
-        console.log(`resultArray:`, resultArray);
-        
+        //console.log(resultArray);
+                
         // Specify the object that we want and place into variable 'result'
         // NOT FULLY SURE ON THIS ONE
         var result = resultArray[0];
@@ -66,44 +67,47 @@ function buildMetadata(sample) {
     });
 };
 
-// function buildCharts(samples) {
-//     d3.json('samples.json').then(data => {
-//         var samples = data.samples;
-//         var resultArray = samples.filter(sampleObj => sampleObj.id == samples);
-//         var result = resultArray[0];
-//         console.log("RESULT:");
-//         console.log(result);
-//         console.log("resultArray:");
-//         console.log(resultArray);
-//         console.log(`SAMPLES:, ${samples}`);
-//         //error somewhere here!!!
+// Create function that will build the graphs
+// While creating this function, will need to create function optionChanged first!
+function buildCharts(samples) {
+    // Fetch JSON data
+    d3.json('samples.json').then(data => {
+        // 'samples' w/in samples.json contains the data we want to make the graphs, so place that into a variable called 'samples'
+        var samples = data.samples;
+        console.log("buildCharts samples:", samples);
+        var resultArray = samples.filter(sampleObj => sampleObj.id == samples);
+        //console.log(resultArray);
+        var result = resultArray[0];
+        
+        
+        //error somewhere here!!!
 
-//         var otu_ids = result.otu_ids;
-//         var otu_labels = result.otu_labels;
-//         var sample_values = result.sample_values;
+        // var otu_ids = result.otu_ids;
+        // var otu_labels = result.otu_labels;
+        // var sample_values = result.sample_values;
 
-//         var bubbleLayout = {
-//             title: 'Vactera Cultures Per Sample',
-//             margin: {t: 0 },
-//             hovermode: 'closest',
-//             xaxis: { title: 'OTU ID'},
-//             margin: { t: 30}
-//         };
-//         var bubbleData = [
-//             {
-//                 x: otu_ids,
-//                 y: sample_values,
-//                 text: otu_labels,
-//                 mode: 'markers',
-//                 marker: {
-//                     size: sample_values,
-//                     color: otu_ids,
-//                     colorscale: 'Earth'
-//                 }
-//             }
-//         ];
+        // var bubbleLayout = {
+        //     title: 'Vactera Cultures Per Sample',
+        //     margin: {t: 0 },
+        //     hovermode: 'closest',
+        //     xaxis: { title: 'OTU ID'},
+        //     margin: { t: 30}
+        // };
+        // var bubbleData = [
+        //     {
+        //         x: otu_ids,
+        //         y: sample_values,
+        //         text: otu_labels,
+        //         mode: 'markers',
+        //         marker: {
+        //             size: sample_values,
+        //             color: otu_ids,
+        //             colorscale: 'Earth'
+        //         }
+        //     }
+        // ];
 
-//         Plotly.newPlot('bubble',bubbleData,bubbleLayout);
-//     });
-// }
+        // Plotly.newPlot('bubble',bubbleData,bubbleLayout);
+    });
+}
 
