@@ -43,6 +43,7 @@ function buildMetadata(sample) {
     d3.json('samples.json').then(data => {
         // Create variable to hold all the metadata
         var metadata = data.metadata;
+        console.log("metadata:", metadata);
         
         
         // DON'T UNDERSTAND WHAT'S HAPPENING IN RESULTARRAY
@@ -52,6 +53,7 @@ function buildMetadata(sample) {
         // Specify the object that we want and place into variable 'result'
         // NOT FULLY SURE ON THIS ONE
         var result = resultArray[0];
+        console.log("Result:", result);
         
         
         // Reference location to put metadata and place into variable 'panel'
@@ -66,26 +68,41 @@ function buildMetadata(sample) {
         });
 
         //buildGauge(result.wfreq);
-        console.log("buildGauge:", result.wfreq);
+        
+
+        // GAUGE CHART
+        var washFreq = result.wfreq;
+        console.log("washFreq:", washFreq);
+
+        var data = [
+            {
+            domain: { x: [0, 1], y: [0, 1]},
+            value: washFreq,
+            title: { text: "Speed" },
+            type: "indicator",
+            mode: "gauge+number"
+            }
+        ];
+
+        var layout = { width: 525, height: 500, margin: { t:0, b: 0 }};
+        Plotly.newPlot("gauge", data, layout);
+        
     });
 };
 
-function buildGauge(something) {
-    
-    var layout = { width: 525, height: 500, margin: { t:0, b: 0 }};
-    Plotly.newPlot("gauge", data, layout);
-}
-var data = [
-        {
-        domain: { x: [0, 1], y: [0, 1]},
-        value: 2,
-        title: { text: "Speed" },
-        type: "indicator",
-        mode: "gauge+number"
-        }
-];
-var layout = { width: 525, height: 500, margin: { t:0, b: 0 }};
-Plotly.newPlot("gauge", data, layout);
+
+// WORKING GAUGE CHART ON ITS OWN
+// var data = [
+//     {
+//     domain: { x: [0, 1], y: [0, 1]},
+//     value: 201,
+//     title: { text: "Speed" },
+//     type: "indicator",
+//     mode: "gauge+number"
+//     }
+// ];
+// var layout = { width: 525, height: 500, margin: { t:0, b: 0 }};
+// Plotly.newPlot("gauge", data, layout);
     
 
 
@@ -100,10 +117,10 @@ function buildCharts(blah) {
         // Within 'samples' from samples.json, find the id that matches the user input in drop down menu
         // ANSWER THIS: how does it know what the id is?  The parameter?  Where does the parameter factor in?
         var resultArray = samples.filter(sampleObj => sampleObj.id == blah);
-        console.log("resultArray:", resultArray);       
+        //console.log("resultArray:", resultArray);       
         // Pull that specific samples object out and place into a variable called 'result'
         var result = resultArray[0];
-        console.log("result:", result);
+        //console.log("result:", result);
         
         // Variables to hold the various data for our charts
         var otu_ids = result.otu_ids;
