@@ -65,9 +65,25 @@ function buildMetadata(sample) {
             panel.append('h6').text(`${key.toUpperCase()}: ${value}`);
         });
 
-        // buildGauge(result.wfreq);
+        //buildGauge(result.wfreq);
+        console.log("buildGauge:", result.wfreq);
     });
 };
+
+
+var data = [
+        {
+        domain: { x: [0, 1], y: [0, 1]},
+        value: 270,
+        title: { text: "Speed" },
+        type: "indicator",
+        mode: "gauge+number"
+        }
+];
+var layout = { width: 600, height: 500, margin: { t:0, b: 0 }};
+Plotly.newPlot("gauge", data, layout);
+    
+
 
 // Create function that will build the graphs
 // While creating this function, will need to create function optionChanged first!
@@ -80,7 +96,7 @@ function buildCharts(blah) {
         // Within 'samples' from samples.json, find the id that matches the user input in drop down menu
         // ANSWER THIS: how does it know what the id is?  The parameter?  Where does the parameter factor in?
         var resultArray = samples.filter(sampleObj => sampleObj.id == blah);
-         console.log("resultArray:", resultArray);       
+        console.log("resultArray:", resultArray);       
         // Pull that specific samples object out and place into a variable called 'result'
         var result = resultArray[0];
         console.log("result:", result);
@@ -93,36 +109,34 @@ function buildCharts(blah) {
         var sample_values = result.sample_values;
         //console.log("sample_values:", sample_values);
 
-        // SLICING
-        var otu_ids_sliced = otu_ids.slice(0, 10);
-        console.log("SLICED IDS:", otu_ids_sliced);
-        var otu_labels_sliced = otu_labels.slice(0, 10);
-        console.log("Sliced Labels:", otu_labels_sliced);
-        var sample_values_sliced = sample_values.slice(0, 10);
-        console.log("Values Sliced:", sample_values_sliced);
+        // Want bar chart of top 10, highest on top
+        // Need to slice and reverse
+        var otu_ids_sliced = otu_ids.slice(0, 10).reverse();
+        //console.log("SLICED IDS:", otu_ids_sliced);
+        var otu_labels_sliced = otu_labels.slice(0, 10).reverse();
+        //console.log("Sliced Labels:", otu_labels_sliced);
+        var sample_values_sliced = sample_values.slice(0, 10).reverse();
+        //console.log("Values Sliced:", sample_values_sliced);
+        
 
         // BAR CHART
         var barData = [
             {
                 x: sample_values_sliced,
-                y: otu_labels_sliced,
+                
+                //ylabel: otu_ids_sliced,
+                // hover text
                 text: otu_labels_sliced,
-                name: "NAME?",
+                name: "Bacteria Name",
                 type: "bar",
                 orientation: "h"
             }
         ];
 
         var barLayout = {
-            title: "BAR TITLE",
-            margin: {
-                l: 100,
-                r: 100,
-                t: 100,
-                b: 100
-            }
+            title: "BAR TITLE"
+            
         };
-
         Plotly.newPlot("bar", barData, barLayout);
 
         // BUBBLE CHART
@@ -146,10 +160,6 @@ function buildCharts(blah) {
                 }
             }
         ];
-
-        // BAR CHART
-        
-
         Plotly.newPlot('bubble',bubbleData,bubbleLayout);
     });
 }
