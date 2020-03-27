@@ -28,12 +28,65 @@ function init() {
                 
         buildCharts(firstSample);
         buildMetadata(firstSample);
+        buildGauge(firstSample);
     });
 };
 
 function optionChanged(newSample) {
     buildCharts(newSample);
     buildMetadata(newSample);
+    buildGauge(newSample);
+}
+
+// Function to make the gauge chart
+function buildGauge(blah) {
+    d3.json('samples.json').then(data => {
+        var metadata = data.metadata;
+        var resultArray = metadata.filter(sampleObj => sampleObj.id == blah);
+        var result = resultArray[0];
+        var washFreq = result.wfreq;
+        console.log("GAUGE washFreq:", washFreq);
+        var data = [
+            {
+            domain: { x: [0, 1], y: [0, 1]},
+            value: washFreq,
+            title: { text: "Hand Wash Freq", font: { size: 24 } },
+            type: "indicator",
+            mode: "gauge+number+delta",
+            delta: { reference: 9, increasing: {color: "RebeccaPurple"} },
+            gauge: { 
+                axis: { range: [null, 9], tickwidth: 1, tickcolor: "darkblue" }, 
+                bar: { color: "darkblue" },
+                bgcolor: "white",
+                borderwidth: 2,
+                bordercolor: "gray",
+                steps: [
+                    { range: [0, 1], color: "#33cca6"},
+                    { range: [1, 2], color: "#33cccc" },
+                    { range: [2, 3], color: "#33a6cc" },
+                    { range: [3, 4], color: "#3380cc" },
+                    { range: [4, 5], color: "#3359cc" },
+                    { range: [5, 6], color: "#3333cc" },
+                    { range: [6, 7], color: "#5933cc" },
+                    { range: [7, 8], color: "#8033cc" },
+                    { range: [8, 9], color: "#a633cc" } 
+                        ],
+                }
+            }
+        ];
+
+        var layout = { 
+            width: 465, 
+            height: 400, 
+            margin: { t: 25, r: 25, l: 25, b: 25 },
+            paper_bgcolor: "black",
+            font: {
+                color: "darkblue",
+                family: "Arial"
+                }
+        };
+        Plotly.newPlot("gauge", data, layout);
+    });
 }
 
 // Create function to populate 'Demographic Info' table
@@ -66,45 +119,8 @@ function buildMetadata(sample) {
         Object.entries(result).forEach(([key, value]) => {
             panel.append('h6').text(`${key.toUpperCase()}: ${value}`);
         });
-
-        //buildGauge(result.wfreq);
-        
-
-        // GAUGE CHART
-        var washFreq = result.wfreq;
-        console.log("washFreq:", washFreq);
-
-        var data = [
-            {
-            domain: { x: [0, 1], y: [0, 1]},
-            value: washFreq,
-            title: { text: "Speed" },
-            type: "indicator",
-            mode: "gauge+number"
-            }
-        ];
-
-        var layout = { width: 525, height: 500, margin: { t:0, b: 0 }};
-        Plotly.newPlot("gauge", data, layout);
-        
     });
 };
-
-
-// WORKING GAUGE CHART ON ITS OWN
-// var data = [
-//     {
-//     domain: { x: [0, 1], y: [0, 1]},
-//     value: 201,
-//     title: { text: "Speed" },
-//     type: "indicator",
-//     mode: "gauge+number"
-//     }
-// ];
-// var layout = { width: 525, height: 500, margin: { t:0, b: 0 }};
-// Plotly.newPlot("gauge", data, layout);
-    
-
 
 // Create function that will build the graphs
 // While creating this function, will need to create function optionChanged first!
@@ -130,6 +146,8 @@ function buildCharts(blah) {
         var sample_values = result.sample_values;
         //console.log("sample_values:", sample_values);
 
+        
+
         // Want bar chart of top 10, highest on top
         // Need to slice and reverse
         var otu_ids_sliced = otu_ids.slice(0, 10).reverse();
@@ -144,7 +162,8 @@ function buildCharts(blah) {
         var barData = [
             {
                 x: sample_values_sliced,
-                
+                //y: otu_ids_sliced.map(object => object.otu_ids),
+                //y: parseInt(otu_ids_sliced),
                 //ylabel: otu_ids_sliced,
                 // hover text
                 text: otu_labels_sliced,
