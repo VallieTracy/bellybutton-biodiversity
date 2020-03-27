@@ -32,90 +32,35 @@ function init() {
     });
 };
 
+// Function to build the tables with user input
+// optionChanged found inside index.html
 function optionChanged(newSample) {
     buildCharts(newSample);
     buildMetadata(newSample);
     buildGauge(newSample);
 }
 
-// Function to make the gauge chart
-function buildGauge(blah) {
-    d3.json('samples.json').then(data => {
-        var metadata = data.metadata;
-        var resultArray = metadata.filter(sampleObj => sampleObj.id == blah);
-        var result = resultArray[0];
-        var washFreq = result.wfreq;
-        console.log("GAUGE washFreq:", washFreq);
-        var data = [
-            {
-            domain: { x: [0, 1], y: [0, 1]},
-            value: washFreq,
-            title: { text: "Hand Wash Freq", font: { size: 24 } },
-            type: "indicator",
-            mode: "gauge+number+delta",
-            delta: { reference: 9, increasing: {color: "RebeccaPurple"} },
-            gauge: { 
-                axis: { range: [null, 9], tickwidth: 1, tickcolor: "darkblue" }, 
-                bar: { color: "darkblue" },
-                bgcolor: "white",
-                borderwidth: 2,
-                bordercolor: "gray",
-                steps: [
-                    { range: [0, 1], color: "#33cca6"},
-                    { range: [1, 2], color: "#33cccc" },
-                    { range: [2, 3], color: "#33a6cc" },
-                    { range: [3, 4], color: "#3380cc" },
-                    { range: [4, 5], color: "#3359cc" },
-                    { range: [5, 6], color: "#3333cc" },
-                    { range: [6, 7], color: "#5933cc" },
-                    { range: [7, 8], color: "#8033cc" },
-                    { range: [8, 9], color: "#a633cc" } 
-                        ],
-                }
-            }
-        ];
-
-        var layout = { 
-            width: 465, 
-            height: 400, 
-            margin: { t: 25, r: 25, l: 25, b: 25 },
-            paper_bgcolor: "black",
-            font: {
-                color: "darkblue",
-                family: "Arial"
-                }
-        };
-        Plotly.newPlot("gauge", data, layout);
-    });
-}
-
 // Create function to populate 'Demographic Info' table
-// Can build this function before creating optionChanged function
 function buildMetadata(sample) {
     // Fetch the JSON data
     d3.json('samples.json').then(data => {
         // Create variable to hold all the metadata
         var metadata = data.metadata;
-        console.log("metadata:", metadata);
-        
-        
-        // DON'T UNDERSTAND WHAT'S HAPPENING IN RESULTARRAY
-        var resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
-        
                 
+        // Wherever userinput id matches id within the metadata, pull it out and place into variable called 'resultArray'
+        var resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
+                       
         // Specify the object that we want and place into variable 'result'
-        // NOT FULLY SURE ON THIS ONE
-        var result = resultArray[0];
-        console.log("Result:", result);
-        
+        var result = resultArray[0];        
         
         // Reference location to put metadata and place into variable 'panel'
         var panel = d3.select('#sample-metadata');
+        
         // First empty out any data in that location
         panel.html('');
 
         // Go through each key:value pair, and add the text to the 'Demographic Info' table
-        // 'result' is our parameter
+        // 'result' is our parameter specificed above
         Object.entries(result).forEach(([key, value]) => {
             panel.append('h6').text(`${key.toUpperCase()}: ${value}`);
         });
@@ -123,58 +68,52 @@ function buildMetadata(sample) {
 };
 
 // Create function that will build the graphs
-// While creating this function, will need to create function optionChanged first!
-function buildCharts(blah) {
+
+function buildCharts(sample) {
     // Fetch JSON data
     d3.json('samples.json').then(data => {
         // 'samples' w/in samples.json contains the data we want to make the graphs, so place that into a variable called 'samples'
         var samples = data.samples;
-        console.log("samples:", samples);      
-        // Within 'samples' from samples.json, find the id that matches the user input in drop down menu
-        // ANSWER THIS: how does it know what the id is?  The parameter?  Where does the parameter factor in?
-        var resultArray = samples.filter(sampleObj => sampleObj.id == blah);
-        //console.log("resultArray:", resultArray);       
+             
+        // Within 'samples' from samples.json, find the id that matches the user input (=sample) in drop down menu
+        var resultArray = samples.filter(sampleObj => sampleObj.id == sample);
+             
         // Pull that specific samples object out and place into a variable called 'result'
         var result = resultArray[0];
-        //console.log("result:", result);
-        
+                
         // Variables to hold the various data for our charts
         var otu_ids = result.otu_ids;
-        //console.log("otu_ids", otu_ids);
         var otu_labels = result.otu_labels;
-        //console.log("otu_labels:", otu_labels);
         var sample_values = result.sample_values;
-        //console.log("sample_values:", sample_values);
-
+        console.log("sample_values:", sample_values);
         
-
-        // Want bar chart of top 10, highest on top
-        // Need to slice and reverse
+        // Want bar chart of top 10, highest on top; need to slice and reverse
         var otu_ids_sliced = otu_ids.slice(0, 10).reverse();
-        //console.log("SLICED IDS:", otu_ids_sliced);
         var otu_labels_sliced = otu_labels.slice(0, 10).reverse();
-        //console.log("Sliced Labels:", otu_labels_sliced);
         var sample_values_sliced = sample_values.slice(0, 10).reverse();
-        //console.log("Values Sliced:", sample_values_sliced);
         
-
         // BAR CHART
         var barData = [
             {
                 x: sample_values_sliced,
-                //y: otu_ids_sliced.map(object => object.otu_ids),
-                //y: parseInt(otu_ids_sliced),
-                //ylabel: otu_ids_sliced,
+                y: otu_ids_sliced.map(otuID => `OTU${otuID}`),
                 // hover text
                 text: otu_labels_sliced,
-                name: "Bacteria Name",
                 type: "bar",
-                orientation: "h"
+                orientation: "h",
+                marker: {
+                    color: "#33cca6",
+                    opacity: 0.6,
+                    line: {
+                        color: 'rgb(8,48,107)',
+                        width: 1.5
+                      }
+                    }
             }
         ];
-
         var barLayout = {
-            title: "BAR TITLE"
+            title: "Top 10 Bacteria Cultures Found",
+            margin: {t: 30, l: 150}
             
         };
         Plotly.newPlot("bar", barData, barLayout);
@@ -196,11 +135,61 @@ function buildCharts(blah) {
                 marker: {
                     size: sample_values,
                     color: otu_ids,
-                    colorscale: 'Earth'
+                    colorscale: 'Bluered'
                 }
             }
         ];
-        Plotly.newPlot('bubble',bubbleData,bubbleLayout);
+        Plotly.newPlot('bubble', bubbleData, bubbleLayout);
+    });
+}
+
+// Function to make the gauge chart
+function buildGauge(blah) {
+    d3.json('samples.json').then(data => {
+        var metadata = data.metadata;
+        var resultArray = metadata.filter(sampleObj => sampleObj.id == blah);
+        var result = resultArray[0];
+        var washFreq = result.wfreq;
+        console.log("GAUGE washFreq:", washFreq);
+        var data = [
+            {
+            domain: { x: [0, 1], y: [0, 1]},
+            value: washFreq,
+            title: { text: "Hand Wash Freq", font: { size: 24 } },
+            type: "indicator",
+            mode: "gauge+number",
+            gauge: { 
+                axis: { range: [null, 9], tickwidth: 1, tickcolor: "darkblue" }, 
+                bar: { color: "darkblue" },
+                bgcolor: "white",
+                borderwidth: 2,
+                bordercolor: "gray",
+                steps: [
+                    { range: [0, 1], color: "#33cca6"},
+                    { range: [1, 2], color: "#33cccc" },
+                    { range: [2, 3], color: "#33a6cc" },
+                    { range: [3, 4], color: "#3380cc" },
+                    { range: [4, 5], color: "#3359cc" },
+                    { range: [5, 6], color: "#3333cc" },
+                    { range: [6, 7], color: "#5933cc" },
+                    { range: [7, 8], color: "#8033cc" },
+                    { range: [8, 9], color: "#a633cc" } 
+                        ],
+                   }
+            }
+        ];
+
+        var layout = { 
+            width: 465, 
+            height: 400, 
+            margin: { t: 25, r: 25, l: 25, b: 25 },
+            paper_bgcolor: "black",
+            font: {
+                color: "darkblue",
+                family: "Arial"
+                }
+        };
+        Plotly.newPlot("gauge", data, layout);
     });
 }
 
