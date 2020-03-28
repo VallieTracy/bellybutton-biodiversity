@@ -113,7 +113,7 @@ function buildCharts(sample) {
         ];
         var barLayout = {
             title: "Top 10 Bacteria Cultures Found",
-            margin: {t: 30, l: 150}
+            margin: {t: 75, l: 100, r: 30}
             
         };
         Plotly.newPlot("bar", barData, barLayout);
@@ -121,7 +121,6 @@ function buildCharts(sample) {
         // BUBBLE CHART
         var bubbleLayout = {
             title: 'Bacteria Cultures Per Sample',
-            margin: {t: 0 },
             hovermode: 'closest',
             xaxis: { title: 'OTU ID'},
             margin: { t: 30}
@@ -155,13 +154,12 @@ function buildGauge(blah) {
             {
             domain: { x: [0, 1], y: [0, 1]},
             value: washFreq,
-            title: { text: "Hand Wash Freq", font: { size: 24 } },
+            title: { text: "Hand Washing Frequency", font: { size: 24 } },
             type: "indicator",
             mode: "gauge+number",
             gauge: { 
                 axis: { range: [null, 9], tickwidth: 1, tickcolor: "darkblue" }, 
                 bar: { color: "darkblue" },
-                bgcolor: "white",
                 borderwidth: 2,
                 bordercolor: "gray",
                 steps: [
@@ -183,7 +181,6 @@ function buildGauge(blah) {
             width: 465, 
             height: 400, 
             margin: { t: 25, r: 25, l: 25, b: 25 },
-            paper_bgcolor: "black",
             font: {
                 color: "darkblue",
                 family: "Arial"
